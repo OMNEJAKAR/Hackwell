@@ -241,7 +241,7 @@ app.put("/tasks/allocate/:id", async (req, res) => {
             "Web Development",
             "Cybersecurity",
             "Software Development & Programming",
-            "Machine Learning & AI",
+            "Machine Learning",
             "Cloud & DevOps",
             "Blockchain Technology",
             "Data Science",
@@ -264,11 +264,12 @@ app.put("/tasks/allocate/:id", async (req, res) => {
 
         // Step 2: Fetch users with matching skills and availability
         const candidates = await User.find({
-            skills: { $in: task.skillsRequired },
+            skills: { $in: bestSkill },
             shift: task.shiftRequired,
             availability: true,
             assignedTaskCount: { $lt: 1 }
         });
+        console.log(candidates)
 
         if (candidates.length === 0) return res.status(404).json({ error: "No suitable user found" });
 
@@ -344,6 +345,50 @@ app.put("/users/decrement/:id", async (req, res) => {
     }
 });
 
+app.put("/tasks/:taskId/complete", async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const task = await Task.findById(taskId).populate("allocatedUser");
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        if (task.status === "Completed") {
+            return res.status(400).json({ message: "Task is already completed" });
+        }
+
+        task.status = "Completed";
+        task.completedAt = new Date();
+
+        // ✅ Ensure `assignedAt` exists before calculating completion time
+        let completionTime = 0;
+        if (task.assignedAt) {
+            completionTime = (task.completedAt - task.assignedAt) / (1000 * 60 * 60);
+        }
+
+        // ✅ Fix user lookup
+        const user = await User.findById(task.allocatedUser?._id);
+
+        if (user) {
+            user.completedTasks = (user.completedTasks || 0) + 1;
+            user.assignedTaskCount = Math.max(0, (user.assignedTaskCount || 1) - 1); // Prevent negative values
+            user.averageCompletionTime =
+                (user.averageCompletionTime * (user.completedTasks - 1) + completionTime) / user.completedTasks;
+
+            await user.save();
+        }
+
+        await task.save();
+        res.json({ message: "Task marked as completed", task });
+
+    } catch (error) {
+        console.error("Error marking task as completed:", error);
+        res.status(500).json({ error: "Failed to mark task as completed" });
+    }
+});
+
+
 
 // Fetch all tasks
 app.get("/tasks", async (req, res) => {
@@ -376,6 +421,5 @@ app.get("/client",async(req,res)=>
 })
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
 
 

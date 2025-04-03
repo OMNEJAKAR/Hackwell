@@ -26,17 +26,39 @@ const SupervisorTasks = () => {
       .catch((err) => console.error("Error adding task:", err));
   };
 
-  const allocateTask = (taskId) => {
-    fetch(`http://localhost:5000/tasks/allocate/${taskId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((updatedTask) => {
-        setTasks(tasks.map(task => task._id === updatedTask.task._id ? updatedTask.task : task));
-      })
-      .catch((err) => console.error("Error allocating task:", err));
+  const allocateTask = async (taskId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/tasks/allocate/${taskId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to allocate task");
+      }
+  
+      const updatedTask = await response.json();
+  
+      if (!updatedTask.task.allocatedUser) {
+        alert("❌ No workers available to allocate this task!");
+        return;
+      }
+  
+      setTasks(prevTasks =>
+        prevTasks.map(task => 
+          task._id === updatedTask.task._id ? updatedTask.task : task
+        )
+      );
+  
+      alert(`✅ Task successfully allocated to ${updatedTask.task.allocatedUser.name}`);
+    } catch (error) {
+      console.error("Error allocating task:", error);
+      alert("❌ No workers available to allocate this task!");
+    }
   };
+  
+  
+  
 
   return (
     <div className="container">
