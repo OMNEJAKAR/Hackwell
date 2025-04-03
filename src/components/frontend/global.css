@@ -57,3 +57,24 @@
     background-color: #0056b3 !important;
   }
   
+  .priority-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: capitalize;
+    color: white;
+    display: inline-block;
+  }
+  
+  .priority-badge.High {
+    background-color: lightcoral;
+  }
+  
+  .priority-badge.Medium {
+    background-color: yellow;
+    color: black;
+  }
+  
+  .priority-badge.Low {
+    background-color: green;
+  }
