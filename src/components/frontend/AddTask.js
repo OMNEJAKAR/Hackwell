@@ -27,7 +27,7 @@ const AddTask = ({ addTask }) => {
         onChange={(e) => setDescription(e.target.value)}
         required
       ></textarea>
-      <select value={shiftRequired} onChange={(e) => setShiftRequired(e.target.value)}>
+      <select className="add-task" value={shiftRequired} onChange={(e) => setShiftRequired(e.target.value)}>
         <option value="Day">Day</option>
         <option value="Night">Night</option>
       </select>
