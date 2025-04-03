@@ -43,6 +43,19 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model("Task", taskSchema);
 
+const authenticateUser = (req, res, next) => {
+    const token = req.header("Authorization");
+    if (!token) return res.status(401).json({ error: "Access denied. No token provided. " });
+
+    try {
+        const decoded = jwt.verify(token.replace("Bearer ", ""), JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({ error: "Invalid token" });
+    };
+}
+
 app.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
