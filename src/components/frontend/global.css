@@ -78,3 +78,34 @@
   .priority-badge.Low {
     background-color: green;
   }
+  .status-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    border: none;
+  }
+  
+  .ongoing {
+    background-color: orange;
+    color: white;
+  }
+  
+  .completed {
+    background-color: green;
+    color: white;
+  }
+  
+  .action-btn {
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+  }
+  
+
+  

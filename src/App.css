@@ -1,51 +1,78 @@
-.home-container {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
+/* Global Styles */
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
 }
 
+/* Hero Section */
 .hero {
-  background: linear-gradient(to right, #4facfe, #00f2fe);
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
   color: white;
-  padding: 50px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
-.home-container .about {
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  width: 700px;
-  margin: auto;
-  margin-top : 50px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-}
+
 .hero h1 {
-  font-size: 2.5em;
+  font-size: 2.5rem;
   margin-bottom: 10px;
 }
-.home-container .features
-{
-  margin-top: 40px;
-}
+
 .hero p {
-  font-size: 1.2em;
+  font-size: 1.2rem;
   margin-bottom: 20px;
 }
 
-.cta-button {
+.btn-primary {
   background: white;
-  color: #007bff;
-  font-size: 18px;
-  padding: 10px 20px;
+  color: #0072ff;
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s;
 }
 
-.cta-button:hover,.home-container .features li:hover {
-  background: #007bff;
+.btn-primary:hover {
+  background: #0072ff;
   color: white;
 }
+
+/* Features Section */
+.features {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.features h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.feature-list {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feature-card {
+  background: white;
+  padding: 15px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
 
 .about, .features {
   margin-top: 30px;
@@ -117,7 +144,7 @@
   justify-content: center;
 }
 
-.add-task input, .add-task textarea {
+.add-task input, .add-task textarea,select{
   width: auto;
   padding: 8px;
   font-size: 16px;
