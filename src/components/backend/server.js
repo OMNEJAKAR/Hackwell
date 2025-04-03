@@ -99,6 +99,7 @@ app.post("/tasks", async (req, res) => {
         const newTask = new Task({ title, description, shiftRequired, skillsRequired: [bestSkill], allocatedUser: assignedUser._id });
         await newTask.save();
 
+        // Step 5: Increase the assigned task count for the user
         assignedUser.assignedTaskCount += 1;
         await assignedUser.save();
 
