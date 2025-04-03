@@ -342,18 +342,18 @@
 }
 
 .status-completed {
-  background-color: #e8f5e9;
-  color: #1b5e20;
+  background-color: #e8f5e9 !important;
+  color: #1b5e20 !important;
 }
 
 .status-progress {
-  background-color: #fff8e1;
-  color: #f57f17;
+  background-color: #fff8e1 !important;
+  color: #f57f17 !important;
 }
 
 .status-pending {
-  background-color: #ffebee;
-  color: #b71c1c;
+  background-color: #ffebee !important;
+  color: #b71c1c !important;
 }
 
 /* Priority badges */
