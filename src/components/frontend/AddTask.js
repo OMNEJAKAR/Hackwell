@@ -1,29 +1,61 @@
 import React, { useState } from "react";
 
 const AddTask = ({ addTask }) => {
-  const [task, setTask] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!task.trim()) {
-      setError("Task cannot be empty!");
+    
+    if (!title.trim() || !description.trim()) {
+      setError("Both title and description are required!");
       return;
     }
-    addTask(task);
-    setTask("");
-    setError(""); // Clear error after adding task
+
+    const newTask = { title, description };
+
+    try {
+      const response = await fetch("http://localhost:5000/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      
+      if (!response.ok) {
+        throw new Error("Failed to add task");
+      }
+      
+
+        const data = await response.json();
+        console.log(data.message)
+        alert("task allocated")
+      addTask(data); // Add task to UI
+      setTitle("");
+      setDescription("");
+      setError("");
+    } catch (err) {
+      setError("Error adding task. Try again!");
+    }
   };
 
   return (
     <form className="add-task" onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="Enter new task"
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
+        placeholder="Task Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
       />
-      <button type="submit" disabled={!task.trim()}>Add Task</button>
+      <textarea
+        placeholder="Task Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <button type="submit" disabled={!title.trim() || !description.trim()}>Add Task</button>
       {error && <p className="error">{error}</p>}
     </form>
   );
