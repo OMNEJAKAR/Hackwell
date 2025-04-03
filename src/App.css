@@ -1,3 +1,62 @@
+.home-container {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.hero {
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: white;
+  padding: 50px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.cta-button {
+  background: white;
+  color: #007bff;
+  font-size: 18px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.cta-button:hover {
+  background: #007bff;
+  color: white;
+}
+
+.about, .features {
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.features li {
+  font-size: 18px;
+  background: #f4f4f4;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
 .container {
   text-align: center;
   font-family: Arial, sans-serif;
@@ -42,7 +101,7 @@
 }
 
 .register-form {
-  width: 350px;
+  width: 400px;
   margin: auto;
   padding: 20px;
   border: 1px solid #ddd;
@@ -52,6 +111,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: center;
+
 }
 
 .register-form h2 {
@@ -94,4 +155,14 @@
 
 .register-form button:hover {
   background: #0056b3;
+}
+
+body {
+  position: relative;
+}
+.register-form-div {
+  height: 700px;
+  display: flex;
+  align-items: center;
+  overflow-y: hidden;
 }

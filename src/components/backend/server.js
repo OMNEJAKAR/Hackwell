@@ -87,7 +87,7 @@ app.post("/login",async(req,res)=>{
 
 app.post("/tasks", async (req, res) => {
     try {
-        const { title, description,skillsRequired } = req.body;
+        const { title, description } = req.body;
         const skills = ["Web Development","Machine Learning","Cybersecurity","Database Management"];
         
         const response = await axios.post(
@@ -113,7 +113,7 @@ app.post("/tasks", async (req, res) => {
             return res.status(404).json({error:"No user found with matching skill"});
         }
 
-        const newTask = new Task({title, description,skillsRequired,allocatedUser:assignedUser._id});
+        const newTask = new Task({title, description,allocatedUser:assignedUser._id});
         await newTask.save();
 
         assignedUser.assignedTaskCount += 1;
