@@ -1,27 +1,25 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const Home = () => {
   return (
-    <div className="home-container">
+    <div className="landing-container">
+      {/* Hero Section */}
       <header className="hero">
         <h1>AI Task Allocation System</h1>
-        <p>Efficiently manage and distribute tasks with AI-powered automation.</p>
-        <Link to="/login" ><button className="cta-button">Get Started</button></Link>
+        <p>Effortlessly assign and manage tasks with AI-driven automation.</p>
+        <Link to="/login"> <button className="btn-primary">Get Started</button></Link>
       </header>
-      
-      <section className="about">
-        <h2>Why Choose Our System?</h2>
-        <p>Our AI-driven system intelligently assigns tasks based on priority, skillset, and availability, ensuring maximum productivity.</p>
-      </section>
-      
-      <section className="features add-task">
+
+      {/* Features Section */}
+      <section className="features">
         <h2>Key Features</h2>
-        <ul>
-          <li>Smart Task Allocation</li>
-          <li>Real-time Tracking</li>
-          <li>Seamless Collaboration</li>
-        </ul>
+        <div className="feature-list">
+          <div className="feature-card">🚀 Smart Task Allocation</div>
+          <div className="feature-card">⏱ Real-time Tracking</div>
+          <div className="feature-card">🤝 Seamless Collaboration</div>
+          <div className="feature-card">📊 Performance Analytics</div>
+        </div>
       </section>
     </div>
   );
