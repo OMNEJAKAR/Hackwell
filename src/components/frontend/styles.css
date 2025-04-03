@@ -624,3 +624,53 @@
     width: calc(100% - 70px);
   }
 }
+
+/* Sidebar */
+.sidebar {
+  background-color: #1E1E2F;
+  color: #FFFFFF;
+}
+
+.nav-item {
+  color: #BBB;
+}
+.nav-item.active {
+  background-color: #2A2A3F;
+  color: #FFF;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  color: #FFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.blue { background-color: #4A90E2; }
+.green { background-color: #27AE60; }
+.purple { background-color: #9B59B6; }
+.orange { background-color: #E67E22; }
+
+/* Task Status Badges */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+.status-completed { background-color: #27AE60; color: white; }
+.status-progress { background-color: #F1C40F; color: black; }
+.status-pending { background-color: #E74C3C; color: white; }
+
+/* Table Styling */
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.task-table th, .task-table td {
+  padding: 10px;
+  text-align: left;
+}
+.task-table tbody tr:nth-child(odd) {
+  background-color: #FAFAFA;
+}

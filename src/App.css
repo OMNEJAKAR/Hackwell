@@ -1,9 +1,7 @@
-/* Global Styles */
-body {
-  font-family: "Arial", sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
+.home-container {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
 }
 
 /* Hero Section */
@@ -144,7 +142,7 @@ body {
   justify-content: center;
 }
 
-.add-task input, .add-task textarea,select{
+.add-task input, .add-task textarea {
   width: auto;
   padding: 8px;
   font-size: 16px;
@@ -183,71 +181,174 @@ body {
   font-size: 14px;
   text-align: center;
 }
-/********************************/
-
-.register-form {
-  width: 400px;
+/**************************************/
+/* Center the form */
+.register-form-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   margin: auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-
+  background: linear-gradient(to right, #141e30, #243b55); /* Dark blue gradient */
 }
 
-.register-form h2 {
+/* Form container */
+.register-form {
+  background: rgba(255, 255, 255, 0.1); /* Light transparency */
+  backdrop-filter: blur(12px);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  width: auto;
+
   text-align: center;
-  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.register-form input,
-.register-form select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  outline: none;
+/* Heading */
+.register-form h2 {
+  color: #f1f1f1;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
-.register-form .skills-container {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.register-form .skill-option {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.register-form button {
-  background: #007bff;
-  color: white;
-  font-size: 16px;
-  padding: 10px;
+/* Input fields */
+.register-form input {
+  width: 80%;
+  padding: 12px;
+  margin: 10px 0;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   transition: 0.3s;
 }
 
-.register-form button:hover {
-  background: #0056b3;
+/* Input focus effect */
+.register-form input:focus {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-body {
-  position: relative;
+/* Placeholder styling */
+.register-form input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
-.register-form-div {
-  height: 700px;
+
+/* Button */
+.register-form button {
+  width: 50%;
+  padding: 12px;
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Warm contrast */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Button hover effect */
+.register-form button:hover {
+  background: linear-gradient(to right, #feb47b, #ff7e5f);
+  transform: scale(1.05);
+}
+
+/* Add subtle animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.register-form {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Overall container */
+.landing-container {
+  background-color: #F5F7FA;
+  color: #1E1E2F;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(to right, #1E1E2F, #4A90E2);
+  color: white;
+  padding: 60px 20px;
+  border-radius: 10px;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: #FEC601;
+  color: #1E1E2F;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #e5b400;
+}
+
+/* Features Section */
+.features {
+  margin-top: 40px;
+}
+
+.features h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #1E1E2F;
+}
+
+.feature-list {
   display: flex;
-  align-items: center;
-  overflow-y: hidden;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feature-card {
+  background: white;
+  color: #1E1E2F;
+  padding: 15px 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: #FEC601;
+  color: #1E1E2F;
 }
