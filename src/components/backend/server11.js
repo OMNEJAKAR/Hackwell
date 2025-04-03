@@ -246,7 +246,7 @@ app.put("/tasks/allocate/:id", async (req, res) => {
 
         console.log("Hugging Face API Response:", response.data);
         const skillLabels = response.data.labels;
-        task.skillsRequired = skillLabels[0]; // Store top 2 relevant skills
+        task.skillsRequired = skillLabels[0]; // Store top relevant skill
 
         // Step 2: Fetch users with matching skills and availability
         const candidates = await User.find({
@@ -257,16 +257,15 @@ app.put("/tasks/allocate/:id", async (req, res) => {
         });
 
         if (candidates.length === 0) return res.status(404).json({ error: "No suitable user found" });
-        console.log(candidates);
+
         // Step 3: Rank candidates using AI-based scoring
         const bestUser = candidates
             .map(user => {
-                // const skillMatch = task.skillsRequired.filter(skill => user.skills.includes(skill)).length;
                 const experienceFactor = user.completedTasks || 0; // More completed tasks = More experienced
                 const efficiencyFactor = user.averageCompletionTime > 0 ? 1 / user.averageCompletionTime : 1; // Faster users get higher weight
 
                 // Weighted formula: Prioritizing skill match > experience > efficiency
-                const score =  (experienceFactor * 2) + (efficiencyFactor * 1.5);
+                const score = (experienceFactor * 2) + (efficiencyFactor * 1.5);
                 
                 return { user, score };
             })
@@ -281,14 +280,18 @@ app.put("/tasks/allocate/:id", async (req, res) => {
         bestUser.assignedTaskCount += 1;
         await bestUser.save();
 
-        console.log(` Task assigned to ${bestUser.name} (Skill: ${task.skillsRequired.join(", ")})`);
-        
-        res.status(200).json({ message: "Task allocated successfully", task });
+        console.log(`Task assigned to ${bestUser.name} (Skill: ${task.skillsRequired})`);
+
+        // ✅ Step 6: Populate allocatedUser details before sending response
+        const updatedTask = await Task.findById(task._id).populate("allocatedUser", "name email");
+
+        res.status(200).json({ message: "Task allocated successfully", task: updatedTask });
     } catch (error) {
-        console.error(" Task Allocation Error:", error);
+        console.error("Task Allocation Error:", error);
         res.status(500).json({ error: "Failed to allocate task" });
     }
 });
+
 
 app.delete("/tasks/:id", async (req, res) => {
     try {
