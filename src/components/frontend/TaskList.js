@@ -1,7 +1,32 @@
 import React from "react";
 import './global.css';
 
-const TaskList = ({ tasks, allocateTask }) => {
+const TaskList = ({ tasks, setTasks, allocateTask }) => {
+  
+  const deleteTask = async (taskId, userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete task");
+      }
+
+      if (userId) {
+        // Decrement worker's assignedTaskCount
+        await fetch(`http://localhost:5000/users/decrement/${userId}`, {
+          method: "PUT",
+        });
+      }
+
+      // Remove deleted task from UI
+      setTasks(tasks.filter((task) => task._id !== taskId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   return (
     <div className="content-card">
       <h2 className="content-title">Task List</h2>
@@ -19,6 +44,7 @@ const TaskList = ({ tasks, allocateTask }) => {
                 <th>Priority</th>
                 <th>Assignee</th>
                 <th>Actions</th>
+                <th>Delete</th> {/* ✅ Added Delete Column */}
               </tr>
             </thead>
             <tbody>
@@ -52,6 +78,15 @@ const TaskList = ({ tasks, allocateTask }) => {
                         Allocate Job
                       </button>
                     )}
+                  </td>
+                  <td>
+                    {/* ✅ Delete Button */}
+                    <button
+                      className="action-btn delete-btn"
+                      onClick={() => deleteTask(task._id, task.allocatedUser?._id)}
+                    >
+                      🗑
+                    </button>
                   </td>
                 </tr>
               ))}

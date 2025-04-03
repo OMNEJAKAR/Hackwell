@@ -42,7 +42,7 @@ const SupervisorTasks = () => {
     <div className="container">
       <h1>Supervisor Task Management</h1>
       <AddTask addTask={addTask} />
-      <TaskList tasks={tasks} allocateTask={allocateTask} />
+      <TaskList tasks={tasks} setTasks={setTasks} allocateTask={allocateTask}/>
     </div>
   );
 };
