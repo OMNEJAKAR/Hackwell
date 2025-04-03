@@ -77,7 +77,9 @@ const taskSchema = new mongoose.Schema(
         allocatedUser: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
         priority: { type: String, enum: ["High", "Medium", "Low"], required: true },
         // priorityScore: { type: Number, default: null }, // AI-determined priority confidence score
-        status: { type: String, enum: ["Pending", "In Progress", "Completed"], default: "Pending" }, // Task state
+        status: { type: String, enum: ["Pending", "In Progress", "Completed"], default: "Pending" },
+        assignedAt: { type: Date, default: null }, // ✅ Add assignedAt field
+        completedAt: { type: Date, default: null }, // ✅ Ensure completedAt is included // Task state
         completionTime: { type: Number, default: null }, // Time taken to complete (in hours)
     },
     { timestamps: true }
@@ -274,6 +276,7 @@ app.put("/tasks/allocate/:id", async (req, res) => {
 
         // Step 4: Allocate the task
         task.allocatedUser = bestUser._id;
+        task.assignedAt = new Date();
         await task.save();
 
         // Step 5: Update user workload
@@ -341,3 +344,68 @@ app.get("/tasks", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+
+
+
+app.put("/tasks/:taskId/complete", async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const task = await Task.findById(taskId).populate("allocatedUser");
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        if (task.status === "Completed") {
+            return res.status(400).json({ message: "Task is already completed" });
+        }
+        console.log(task.assignedAt)
+
+        task.status = "Completed";
+        task.completedAt = new Date();
+
+        // Calculate completion time in hours
+        const completionTime = (task.completedAt - task.assignedAt) / (1000 * 60 * 60);
+
+        // Update user statistics
+        const user = await User.findById(task.allocatedUser);
+
+        if (user) {
+            user.completedTasks += 1;
+            user.assignedTaskCount -= 1; // Reduce assigned task count
+            user.averageCompletionTime = 
+                (user.averageCompletionTime * (user.completedTasks - 1) + completionTime) / user.completedTasks;
+
+            await user.save();
+        }
+
+        await task.save();
+        res.json({ message: "Task marked as completed", task });
+
+    } catch (error) {
+        console.error("Error marking task as completed:", error);
+        res.status(500).json({ error: "Failed to mark task as completed" });
+    }
+});
+
+app.get("/client",async(req,res)=>
+    {
+        const Clients = await User.countDocuments({ assignedTaskCount: 1 });
+        const totalClients  = await User.countDocuments();
+        const totalTask = await Task.countDocuments();
+        const completedTask = await Task.countDocuments({status:"completed"});
+        const pendingTask = await Task.countDocuments({status:"Pending"});
+        const ongoingTask = await Task.countDocuments({status:"ongoing"});
+        // console.log("Total Clients:", totalClients);
+        
+        res.status(200).json({
+            Clients,
+            totalClients,
+            completedTask,
+            pendingTask,
+            ongoingTask,
+            totalTask
+    });
+    
+    })
