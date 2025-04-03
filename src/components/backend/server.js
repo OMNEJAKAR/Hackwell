@@ -17,9 +17,12 @@ const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 const apiKey = process.env.HUGGINGFACE_API_KEY;
 
-mongoose.connect('mongodb://localhost:27017/hack-well', { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("✅ Database connected"))
-    .catch((error) => console.error("❌ Database connection error:", error));
+mongoose.connect('mongodb://localhost:27017/hack-well')
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, "connection error:"));
+db.once('open', () => {
+    console.log("Database connected");
+})
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -38,7 +41,10 @@ const taskSchema = new mongoose.Schema({
     description: { type: String, required: true },
     shiftRequired: { type: String, enum: ["Day", "Night"], required: true },
     skillsRequired: [{ type: String }],
-    allocatedUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    allocatedUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    priority: { type: String, enum: ["High", "Medium", "Low"], required: true }, // AI-determined priority,
+    status: { type: String, enum: ["Pending", "In Progress", "Completed"], default: "Pending" }, // Track task status
+
 }, { timestamps: true });
 
 const Task = mongoose.model("Task", taskSchema);
@@ -77,7 +83,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/tasks", async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description,shiftRequired } = req.body;
         const skills = ["Web Development", "Machine Learning", "Cybersecurity", "Database Management"];
         const priorityLabels = ["High", "Medium", "Low"];
 
@@ -134,13 +140,15 @@ app.post("/tasks", async (req, res) => {
             description,
             skillsRequired: bestSkill,
             allocatedUser: assignedUser._id,
-            priority // Assigning priority dynamically
+            priority,
+            shiftRequired // Assigning priority dynamically
         });
 
         await newTask.save();
 
         // Step 5: Increase the assigned task count for the user
         assignedUser.assignedTaskCount += 1;
+        assignedUser.shift = shiftRequired;
         await assignedUser.save();
 
         res.status(201).json({ message: "Task assigned successfully", task: newTask });
