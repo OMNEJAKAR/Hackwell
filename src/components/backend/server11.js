@@ -216,9 +216,9 @@ app.get("/client",async(req,res)=>
     const Clients = await User.countDocuments({ assignedTaskCount: 1 });
     const totalClients  = await User.countDocuments();
     const totalTask = await Task.countDocuments();
-    const completedTask = await Task.countDocuments({status:"completed"});
+    const completedTask = await Task.countDocuments({status:"Completed"});
     const pendingTask = await Task.countDocuments({status:"Pending"});
-    const ongoingTask = await Task.countDocuments({status:"ongoing"});
+    const ongoingTask = await Task.countDocuments({status:"Ongoing"});
     // console.log("Total Clients:", totalClients);
     
     res.status(200).json({

@@ -6,24 +6,6 @@ import { jwtDecode } from "jwt-decode";
 import './styles.css';
 import SupervisorTasks from './SupervisorTasks';
 
-// Import dummy data for the tasks
-const DUMMY_TASKS = [
-  { id: 1, title: 'Complete UI design', assignee: 'John Doe', status: 'In Progress', dueDate: '2025-04-10', priority: 'High' },
-  { id: 2, title: 'Implement authentication', assignee: 'Sarah Smith', status: 'Pending', dueDate: '2025-04-15', priority: 'High' },
-  { id: 3, title: 'Create API endpoints', assignee: 'Mike Johnson', status: 'Completed', dueDate: '2025-04-05', priority: 'Medium' },
-  { id: 4, title: 'Test responsive design', assignee: 'Emily Brown', status: 'In Progress', dueDate: '2025-04-12', priority: 'Low' },
-  { id: 5, title: 'Update documentation', assignee: 'John Doe', status: 'Completed', dueDate: '2025-04-03', priority: 'Medium' },
-  { id: 6, title: 'Code review', assignee: 'Sarah Smith', status: 'Pending', dueDate: '2025-04-18', priority: 'Medium' },
-];
-
-// Dummy team members data
-const TEAM_MEMBERS = [
-  { id: 1, name: 'John Doe', role: 'Frontend Developer', email: 'john@example.com', tasks: 2 },
-  { id: 2, name: 'Sarah Smith', role: 'Backend Developer', email: 'sarah@example.com', tasks: 2 },
-  { id: 3, name: 'Mike Johnson', role: 'UI/UX Designer', email: 'mike@example.com', tasks: 1 },
-  { id: 4, name: 'Emily Brown', role: 'Project Manager', email: 'emily@example.com', tasks: 1 },
-];
-
 function Dashboard() {
 
     const navigate = useNavigate();
@@ -34,7 +16,8 @@ function Dashboard() {
     const [pendingTask , setpendingTask] = useState(0);
     const [ongoingTask , setongoingTask] = useState(0);
     const [totalTask,setTotalTask] = useState(0);
-
+    const [Tasks , setTasks] = useState([]);
+    
     useEffect(() => {
         const fetchDashboard = async () => {
             const token = localStorage.getItem("token");
@@ -111,22 +94,18 @@ function Dashboard() {
         fetchUser();
     }, [])
 
+     useEffect(() => {
+        fetch("http://localhost:5000/tasks")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("Fetched tasks:", data);
+            setTasks(data);
+          })
+          .catch((err) => console.error("Error fetching tasks:", err));
+      }, []);
+
   const [activePage, setActivePage] = useState('dashboard');
-  const [tasks, setTasks] = useState(DUMMY_TASKS);
-  const [newTask, setNewTask] = useState({
-    title: '',
-    assignee: '',
-    status: 'Pending',
-    dueDate: '',
-    priority: 'Medium'
-  });
-  const [newUser, setNewUser] = useState({
-    name: '',
-    role: '',
-    email: ''
-  });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
+ 
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
@@ -135,62 +114,10 @@ function Dashboard() {
     { id: 'contact', label: 'Developer Contact', icon: '📞' },
   ];
 
-  // Task status counts for dashboard and status page
-  const taskStats = {
-    total: tasks.length,
-    completed: tasks.filter(task => task.status === 'Completed').length,
-    inProgress: tasks.filter(task => task.status === 'In Progress').length,
-    pending: tasks.filter(task => task.status === 'Pending').length
-  };
 
-  // Handle new task submission
-  const handleTaskSubmit = (e) => {
-    e.preventDefault();
-    
-    // Create new task with unique ID
-    const newTaskWithId = {
-      ...newTask,
-      id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1
-    };
-    
-    setTasks([...tasks, newTaskWithId]);
-    
-    // Reset form
-    setNewTask({
-      title: '',
-      assignee: '',
-      status: 'Pending',
-      dueDate: '',
-      priority: 'Medium'
-    });
-    
-    // Show success message or notification (could be enhanced with a proper notification system)
-    alert('Task added successfully!');
-  };
 
-  // Handle new user submission
-  const handleUserSubmit = (e) => {
-    e.preventDefault();
-    // This would typically connect to an API to create a new user
-    // For demonstration purposes, we'll just show an alert
-    alert(`User ${newUser.name} added successfully!`);
-    
-    // Reset form
-    setNewUser({
-      name: '',
-      role: '',
-      email: ''
-    });
-  };
 
-  // Filter tasks based on search term and status filter
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         task.assignee.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'All' || task.status === filterStatus;
-    
-    return matchesSearch && matchesStatus;
-  });
+
 
   // Helper function for task status color
   const getStatusColor = (status) => {
@@ -276,10 +203,10 @@ function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {tasks.slice(0, 3).map(task => (
+                      {Tasks.slice(0, 3).map(task => (
                         <tr key={task.id}>
                           <td>{task.title}</td>
-                          <td>{task.assignee}</td>
+                          <td>{task.description}</td>
                           <td>
                             <span className={`status-badge ${getStatusColor(task.status)}`}>
                               {task.status}
