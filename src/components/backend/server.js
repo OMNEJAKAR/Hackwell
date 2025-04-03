@@ -5,24 +5,34 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json()); // Parses JSON data
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 const apiKey = process.env.HUGGINGFACE_API_KEY;
 
+<<<<<<< HEAD
 mongoose.connect('mongodb://localhost:27017/hack-well')
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, "connection error:"));
 db.once('open', () => {
     console.log("Database connected");
 })
+=======
+    mongoose.connect("mongodb://localhost:27017/hack-well")  // ✅ No need for extra options
+.then(() => console.log("✅ Database connected"))
+.catch(err => console.log("❌ Database connection error:", err));
+>>>>>>> 042377a (integrated)
 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -35,6 +45,12 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
+
+const AdminSchema = new mongoose.Schema({
+    email:String,
+    password:String
+});
+const Admin = mongoose.model("Admin",AdminSchema);
 
 const taskSchema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -65,14 +81,19 @@ const authenticateUser = (req, res, next) => {
 app.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email });
-
+        
+        // Find user by email
+        const user = await Admin.findOne({ email });
         if (!user) return res.status(400).json({ error: "Invalid email or password" });
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        // Compare passwords
+        const isMatch = await bcrypt.compare(password, user.password); // ✅ Added `await`
+        // console.log(user.password);
         if (!isMatch) return res.status(400).json({ error: "Invalid email or password" });
 
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "1h" });
+        // Generate JWT Token
+        const token = jwt.sign({ userId: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
         res.json({ message: "Login successful", token });
 
     } catch (error) {
@@ -202,23 +223,28 @@ app.delete("/tasks/:id", async (req, res) => {
     }
 });
 
+
 app.post("/users", async (req, res) => {
     try {
-        const { name, email, password, skills, shift } = req.body;
+        const { email, password } = req.body;
         console.log(req.body);
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await Admin.findOne({ email });
         if (existingUser) return res.status(400).json({ error: "User already exists" });
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = new User({ name, email, password: hashedPassword, skills, shift });
+        const user = new Admin({ email, password: hashedPassword});
         await user.save();
 
         res.status(201).json({ message: "User created successfully", user });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+app.get("/dashboard", authenticateUser, (req, res) => {
+    res.json({ message: "Welcome to the dashboard!" });
 });
 
 app.listen(PORT, () => {

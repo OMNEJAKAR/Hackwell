@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SupervisorTasks from "./components/frontend/SupervisorTasks";
-import RegisterForm from "./components/frontend/registration";
+import Login from "./components/frontend/login";
 import "./App.css";
 import Home from "./components/frontend/home";
-
+import Dashboard from "./components/frontend/DashBoard";
 
 const App = () => {
   return (
@@ -12,7 +12,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/tasks" element={<SupervisorTasks />} />
-        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard /> } />
       </Routes>
     </Router>
   );

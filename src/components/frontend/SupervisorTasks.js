@@ -4,62 +4,45 @@ import AddTask from "./AddTask";
 
 const SupervisorTasks = () => {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  // Fetch tasks from backend
-  const fetchTasks = () => {
+  useEffect(() => {
     fetch("http://localhost:5000/tasks")
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched tasks:", data);
         setTasks(data);
       })
-      .catch((err) => {
-        console.error("Error fetching tasks:", err);
-        setError("Failed to load tasks. Try again.");
-      })
-      .finally(() => setLoading(false));
-  };
-
-  // Fetch tasks once when the component mounts
-  useEffect(() => {
-    fetchTasks();
+      .catch((err) => console.error("Error fetching tasks:", err));
   }, []);
 
-  // Add task and refresh the list
   const addTask = (newTask) => {
     fetch("http://localhost:5000/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: newTask.title,
-        description: newTask.description,
-      }),
+      body: JSON.stringify(newTask),
     })
       .then((res) => res.json())
-      .then(() => {
-        fetchTasks(); // Fetch the latest tasks after adding a new one
+      .then((task) => setTasks([...tasks, task.task]))
+      .catch((err) => console.error("Error adding task:", err));
+  };
+
+  const allocateTask = (taskId) => {
+    fetch(`http://localhost:5000/tasks/allocate/${taskId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((updatedTask) => {
+        setTasks(tasks.map(task => task._id === updatedTask.task._id ? updatedTask.task : task));
       })
-      .catch((err) => {
-        console.error("Error adding task:", err);
-        setError("Failed to add task. Try again.");
-      });
+      .catch((err) => console.error("Error allocating task:", err));
   };
 
   return (
     <div className="container">
       <h1>Supervisor Task Management</h1>
-
-      {error && <p className="error">{error}</p>}
-      {loading ? (
-        <p>Loading tasks...</p>
-      ) : (
-        <>
-          <AddTask addTask={addTask} />
-          <TaskList tasks={tasks} />
-        </>
-      )}
+      <AddTask addTask={addTask} />
+      <TaskList tasks={tasks} allocateTask={allocateTask} />
     </div>
   );
 };

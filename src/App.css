@@ -11,12 +11,21 @@
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
-
+.home-container .about {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  width: 700px;
+  margin: auto;
+  margin-top : 50px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
 .hero h1 {
   font-size: 2.5em;
   margin-bottom: 10px;
 }
-
+.home-container .features
+{
+  margin-top: 40px;
+}
 .hero p {
   font-size: 1.2em;
   margin-bottom: 20px;
@@ -33,7 +42,7 @@
   transition: 0.3s;
 }
 
-.cta-button:hover {
+.cta-button:hover,.home-container .features li:hover {
   background: #007bff;
   color: white;
 }

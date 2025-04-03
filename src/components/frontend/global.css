@@ -1,0 +1,59 @@
+.content-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 20px;
+  }
+  
+  .task-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .task-table th,
+  .task-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .task-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .assigned-status {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .pending-status {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .allocated-badge {
+    color: #17a2b8;
+    font-weight: bold;
+  }
+  
+  .action-btn {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .allocate-btn {
+    background: #007bff !important; 
+    color: white;
+  }
+  
+  .allocate-btn:hover {
+    background-color: #0056b3 !important;
+  }
+  
