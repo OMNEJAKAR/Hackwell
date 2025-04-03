@@ -106,7 +106,7 @@ app.post("/tasks", async (req, res) => {
 
         const assignedUser = await User.findOne({ skills: bestSkill })
             .sort("assignedTaskCount") // Sort by the least number of tasks
-            .where("assignedTaskCount").lt(3); // Only consider users with less than 3 active tasks
+            .where("assignedTaskCount").lt(1); // Only consider users with less than 3 active tasks
 
 
         if(!assignedUser){
