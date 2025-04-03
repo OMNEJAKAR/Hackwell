@@ -61,42 +61,69 @@ app.post("/login", async (req, res) => {
     }
 });
 
+
 app.post("/tasks", async (req, res) => {
     try {
-        const { title, description, shiftRequired } = req.body;
-        const skills = ["Machine Learning", "Cybersecurity", "Database Management", "Node.js", "React"];
+        const { title, description } = req.body;
+        const skills = ["Web Development", "Machine Learning", "Cybersecurity", "Database Management"];
+        const priorityLabels = ["High", "Medium", "Low"];
 
-        const response = await axios.post(
+        // Step 1: Get the best skill for the task
+        const skillResponse = await axios.post(
             "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
             { inputs: description, parameters: { candidate_labels: skills } },
             { headers: { Authorization: `Bearer ${apiKey}` } }
         );
 
-        console.log(response.data);
-        let bestSkill = response.data.labels[0];
+        const bestSkill = skillResponse.data.labels[0];
+        console.log(bestSkill);
 
-        let assignedUser = await User.findOne({ 
-            skills: bestSkill, 
-            shift: shiftRequired, 
-            availability: true 
-        })
-        .sort("assignedTaskCount") 
-        .where("assignedTaskCount").lt(1); // Allow up to 3 tasks
+        // Step 2: Assign priority dynamically
+        const priorityResponse = await axios.post(
+            "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
+            { inputs: description, parameters: { candidate_labels: priorityLabels } },
+            { headers: { Authorization: `Bearer ${apiKey}` } }
+        );
 
-        if (!assignedUser && response.data.labels[1]) {
-            bestSkill = response.data.labels[1];
-            assignedUser = await User.findOne({ 
-                skills: bestSkill, 
-                shift: shiftRequired, 
-                availability: true 
-            })
-            .sort("assignedTaskCount") 
-            .where("assignedTaskCount").lt(1);
+        // const labels = priorityResponse.data.labels;
+        // const scores = priorityResponse.data.scores;
+        // console.log(scores);
+        // const priorityMapping = {};
+        // labels.forEach((label, index) => {
+        //     priorityMapping[label] = scores[index];
+        // });
+
+        const highScore = priorityResponse.data.scores[priorityResponse.data.labels.indexOf("High")];
+
+        // Define thresholds dynamically based on score distribution
+        // const highThreshold = 0.5;  // Adjust if necessary
+        // const mediumThreshold = 0.3;
+
+        let priority;
+        if (highScore >= 0.50) priority = "High";
+        else if (highScore >= 0.45) priority = "Medium";
+        else priority = "Low";
+
+        console.log(`Task Priority: ${priority}`);
+
+        // Step 3: Find a user with the best skill who has the least workload
+        const assignedUser = await User.findOne({ skills: bestSkill })
+            .sort({ assignedTaskCount: 1 }) // Sort users by least assigned tasks
+            .where("assignedTaskCount").lt(3); // Only consider users with less than 3 active tasks
+
+        if (!assignedUser) {
+            return res.status(404).json({ error: "No user found with matching skill" });
         }
 
-        if (!assignedUser) return res.status(404).json({ error: "No available user found with matching skill and shift" });
+        // Step 4: Save task to DB
+        const newTask = new Task({
+            title,
+            description,
+            skillsRequired: bestSkill,
+            allocatedUser: assignedUser._id,
+            priority // Assigning priority dynamically
+        });
 
-        const newTask = new Task({ title, description, shiftRequired, skillsRequired: [bestSkill], allocatedUser: assignedUser._id });
         await newTask.save();
 
         // Step 5: Increase the assigned task count for the user
