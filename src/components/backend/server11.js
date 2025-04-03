@@ -329,6 +329,50 @@ app.put("/users/decrement/:id", async (req, res) => {
     }
 });
 
+app.put("/tasks/:taskId/complete", async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const task = await Task.findById(taskId).populate("allocatedUser");
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        if (task.status === "Completed") {
+            return res.status(400).json({ message: "Task is already completed" });
+        }
+
+        task.status = "Completed";
+        task.completedAt = new Date();
+
+        // ✅ Ensure `assignedAt` exists before calculating completion time
+        let completionTime = 0;
+        if (task.assignedAt) {
+            completionTime = (task.completedAt - task.assignedAt) / (1000 * 60 * 60);
+        }
+
+        // ✅ Fix user lookup
+        const user = await User.findById(task.allocatedUser?._id);
+
+        if (user) {
+            user.completedTasks = (user.completedTasks || 0) + 1;
+            user.assignedTaskCount = Math.max(0, (user.assignedTaskCount || 1) - 1); // Prevent negative values
+            user.averageCompletionTime =
+                (user.averageCompletionTime * (user.completedTasks - 1) + completionTime) / user.completedTasks;
+
+            await user.save();
+        }
+
+        await task.save();
+        res.json({ message: "Task marked as completed", task });
+
+    } catch (error) {
+        console.error("Error marking task as completed:", error);
+        res.status(500).json({ error: "Failed to mark task as completed" });
+    }
+});
+
+
 
 // Fetch all tasks
 app.get("/tasks", async (req, res) => {
