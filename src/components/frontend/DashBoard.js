@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import { useState,useEffect, use } from 'react';
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
@@ -28,6 +28,12 @@ function Dashboard() {
 
     const navigate = useNavigate();
     const [decoded, setDecoded] = useState(null);
+    const [clientCount , setClientCount] = useState(0);
+    const [totalClient , settotalClient] = useState(0);
+    const [completedTask , setcompletedTask] = useState(0);
+    const [pendingTask , setpendingTask] = useState(0);
+    const [ongoingTask , setongoingTask] = useState(0);
+    const [totalTask,setTotalTask] = useState(0);
 
     useEffect(() => {
         const fetchDashboard = async () => {
@@ -67,6 +73,43 @@ function Dashboard() {
         fetchDashboard();
     }, [navigate]);
 
+    useEffect(()=>
+    {
+        async function fetchUser()
+        {
+            try {
+                const response = await fetch("http://localhost:5000/client", {
+                    method: "GET",
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+        
+                const data = await response.json(); // Convert response to JSON
+                // console.log(data);
+                if ( data) {
+                    // console.log(data)
+                    setClientCount(data.Clients);
+                    settotalClient(data.totalClients);
+                    setcompletedTask(data.completedTask);
+                    setongoingTask(data.ongoingTask);
+                    setpendingTask(data.pendingTask);
+                    setTotalTask(data.totalTask);
+
+                    console.log("my client ",clientCount);
+                } else {
+                    console.error("Invalid data.count value:", data.count);
+                    setClientCount(0); // Set default to prevent errors
+                }
+
+            } catch (error) {
+                console.error("Error fetching clients:", error);
+            }
+        }
+
+        fetchUser();
+    }, [])
 
   const [activePage, setActivePage] = useState('dashboard');
   const [tasks, setTasks] = useState(DUMMY_TASKS);
@@ -159,16 +202,6 @@ function Dashboard() {
     }
   };
 
-  // Helper function for priority color
-  const getPriorityColor = (priority) => {
-    switch(priority) {
-      case 'High': return 'priority-high';
-      case 'Medium': return 'priority-medium';
-      case 'Low': return 'priority-low';
-      default: return '';
-    }
-  };
-
   return (
     <div className="app-container">
       {/* Sidebar */}
@@ -212,19 +245,19 @@ function Dashboard() {
               <div className="dashboard-grid">
                 <DashboardCard 
                   title="Tasks Assigned" 
-                  value={taskStats.total.toString()} 
+                  value={clientCount || 0} 
                   icon="📋" 
                   colorClass="blue"
                 />
                 <DashboardCard 
                   title="Team Members" 
-                  value={TEAM_MEMBERS.length.toString()} 
+                  value={totalClient || 0} 
                   icon="👥" 
                   colorClass="green"
                 />
                 <DashboardCard 
                   title="Completed Tasks" 
-                  value={taskStats.completed.toString()} 
+                  value={completedTask} 
                   icon="✅" 
                   colorClass="purple"
                 />
@@ -276,25 +309,25 @@ function Dashboard() {
               <div className="status-grid">
                 <StatusCard 
                   title="Total Tasks" 
-                  value={taskStats.total} 
+                  value={totalTask} 
                   icon="📊" 
                   colorClass="status-total"
                 />
                 <StatusCard 
                   title="Completed" 
-                  value={taskStats.completed} 
+                  value={completedTask} 
                   icon="✅" 
                   colorClass="status-completed"
                 />
                 <StatusCard 
                   title="In Progress" 
-                  value={taskStats.inProgress} 
+                  value={ongoingTask} 
                   icon="🔄" 
                   colorClass="status-progress"
                 />
                 <StatusCard 
                   title="Pending" 
-                  value={taskStats.pending} 
+                  value={pendingTask} 
                   icon="⏳" 
                   colorClass="status-pending"
                 />
@@ -305,12 +338,12 @@ function Dashboard() {
                 <div className="progress-bar-container">
                   <div 
                     className="progress-bar" 
-                    style={{width: `${(taskStats.completed / taskStats.total) * 100}%`}}
+                    style={{width: `${(completedTask / totalTask) * 100}%`}}
                   ></div>
                 </div>
                 <p className="progress-text">
-                  {Math.round((taskStats.completed / taskStats.total) * 100)}% Complete
-                  ({taskStats.completed} of {taskStats.total} tasks)
+                  {Math.round((completedTask / totalTask) * 100)}% Complete
+                  ({completedTask} of {totalTask} tasks)
                 </p>
               </div>
             </div>

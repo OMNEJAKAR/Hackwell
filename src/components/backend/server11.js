@@ -155,7 +155,18 @@ app.put("/tasks/allocate/:id", async (req, res) => {
         const task = await Task.findById(id);
         if (!task) return res.status(404).json({ error: "Task not found" });
 
-        const skills = ["Machine Learning", "Cybersecurity", "Database Management", "Node.js", "React", "Java"];
+        const skills = [
+            "Web Development",
+            "Cybersecurity",
+            "Software Development & Programming",
+            "Machine Learning & AI",
+            "Cloud & DevOps",
+            "Blockchain Technology",
+            "Data Science",
+            "Database Management",
+            "Mobile App Development",
+            
+          ];
         const response = await axios.post(
             "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
             { inputs: task.description, parameters: { candidate_labels: skills } },
@@ -163,6 +174,7 @@ app.put("/tasks/allocate/:id", async (req, res) => {
         );
 
         console.log(response.data);
+        
         let bestSkill = response.data.labels[0];
         let assignedUser = await User.findOne({ skills: bestSkill, shift: task.shiftRequired, availability: true })
             .sort("assignedTaskCount")
@@ -199,5 +211,25 @@ app.get("/tasks", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+app.get("/client",async(req,res)=>
+{
+    const Clients = await User.countDocuments({ assignedTaskCount: 1 });
+    const totalClients  = await User.countDocuments();
+    const totalTask = await Task.countDocuments();
+    const completedTask = await Task.countDocuments({status:"completed"});
+    const pendingTask = await Task.countDocuments({status:"Pending"});
+    const ongoingTask = await Task.countDocuments({status:"ongoing"});
+    // console.log("Total Clients:", totalClients);
+    
+    res.status(200).json({
+        Clients,
+        totalClients,
+        completedTask,
+        pendingTask,
+        ongoingTask,
+        totalTask
+    });
+
+})
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
