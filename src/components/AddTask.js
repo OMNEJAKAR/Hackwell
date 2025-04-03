@@ -2,13 +2,17 @@ import React, { useState } from "react";
 
 const AddTask = ({ addTask }) => {
   const [task, setTask] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (task.trim()) {
-      addTask(task);
-      setTask("");
+    if (!task.trim()) {
+      setError("Task cannot be empty!");
+      return;
     }
+    addTask(task);
+    setTask("");
+    setError(""); // Clear error after adding task
   };
 
   return (
@@ -19,7 +23,8 @@ const AddTask = ({ addTask }) => {
         value={task}
         onChange={(e) => setTask(e.target.value)}
       />
-      <button type="submit">Add Task</button>
+      <button type="submit" disabled={!task.trim()}>Add Task</button>
+      {error && <p className="error">{error}</p>}
     </form>
   );
 };

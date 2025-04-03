@@ -13,9 +13,9 @@ app.use(express.json());
 app.use(cors());
 
 const PORT = process.env.PORT || 5000;
-// const MONGO_URI = process.env.MONGO_URI;
-// const JWT_SECRET = process.env.JWT_SECRET;
-// const apiKey = process.env.HUGGINGFACE_API_KEY;
+const MONGO_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
+const apiKey = process.env.HUGGINGFACE_API_KEY;
 
 mongoose.connect('mongodb://localhost:27017/hack-well')
 const db = mongoose.connection;
@@ -72,24 +72,24 @@ app.post("/login",async(req,res)=>{
 })
 
 
-const authenticateUser = (req,res,next) =>{
-    const token = req.header("Authorization");
-    if(!token) return res.status(401).json({error:"Access denied. No token provided. "});
+// const authenticateUser = (req,res,next) =>{
+//     const token = req.header("Authorization");
+//     if(!token) return res.status(401).json({error:"Access denied. No token provided. "});
 
-    try{
-        const decoded = jwt.verify(token.replace("Bearer ",""), JWT_SECRET);
-        req.user = decoded;
-        next();
-    }catch(error){
-        res.status(401).json({error: "Invalid token"});
-    };
-}
+//     try{
+//         const decoded = jwt.verify(token.replace("Bearer ",""), JWT_SECRET);
+//         req.user = decoded;
+//         next();
+//     }catch(error){
+//         res.status(401).json({error: "Invalid token"});
+//     };
+// }
 
 app.post("/tasks", async (req, res) => {
     try {
         const { title, description,skillsRequired } = req.body;
         const skills = ["Web Development","Machine Learning","Cybersecurity","Database Management"];
-
+        
         const response = await axios.post(
              "https://api-inference.huggingface.co/models/facebook/bart-large-mnli",
              {inputs :description,parameters:{candidate_labels:skills}},
@@ -139,9 +139,9 @@ app.post("/tasks", async (req, res) => {
     }
 });
 
-app.get("/tasks",authenticateUser, async (req, res) => {
+app.get("/tasks", async (req, res) => {
     try {
-        const tasks = await Task.find().populate("assignedUser"); 
+        const tasks = await Task.find().populate("allocatedUser"); 
         res.json(tasks);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -211,11 +211,6 @@ app.post("/users", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-
-
-
-
 
 
 
